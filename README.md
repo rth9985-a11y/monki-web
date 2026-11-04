@@ -2,8 +2,10 @@
 
 
 ### What is what?
+| DIR | DESCRIPTION |
+| --- | --- |
 | /STM32_details | All necessary info for STM32 integration (PCB, serial interfaces, specs, etc) |
-| /pcb | PCB fabrication details, package info, learning some shi about PCBs fr
+| /pcb | PCB fabrication details, package info, learning some shi about PCBs fr |
 
 ### TODO
 1. Finish dev board for target chip

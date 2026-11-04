@@ -1,0 +1,47 @@
+--- GENERAL PCB DESIGN NOTES ---
+
+
+
+--- POWER ---
+- 100nF caps near VDD
+	- decouples the power pins from sudden changes in voltage
+
+--- Analog Voltage on the MCU ---
+- To convert analog to digital and digital to analog, there needs to be a refernce voltage to get a sense of the range of the signals
+- IN ADC
+	- The voltage is quantized to 2^resolution voltage points
+	- We need maximum value (say 3.3v) and a minimum value (0v) to represent the signal
+	- VREF+ would be the maximum signal and would be the analog equivalent to the digital 2^(MAX_VAL)
+	- VREF- would be the minimum signal and would represent the digital 2^(MIN_VAL) [almost always a digital 0]
+- We need a voltage reference for this
+
+
+--- Op-amps, Why? ---
+- Before using an ADC to convert a signal, it must be at the proper voltage
+- VREF+/- determine the voltage range the op-amp can amplify before saturating
+- AMPLIFICATION
+	- E.g. 
+		- Say that you have a microphone signal that sits between -10mV and +10mV
+		- The ADC is asking for 3.3v to convert the analog signal 
+		- Need an op-amp to amplify the analog signal such that it is within the ADC range!
+
+- BUFFERING
+	- High output impedance = not supplying a lot of current
+	- Impedance buffering: Supply more or less current from one stage of a circuit to the next
+	- e.g.
+		- A sensor supplies changing voltage but very little current
+		- The next stage in a circuit needs more current to operate
+		- To increase the current while maintaining the voltage readings [ V_out = V_in ]
+	- The high-level mechanism is as follows:
+		1. The V+ is connected to the output of the sensor voltage V- is fed by the V_out
+		2. The load (current needed by the next stage) is drawn from the output voltage
+		3. The output voltage consequentially drops
+		4. The op-amp's job is to keep V+ and V- the same
+			- V_out connected to v- thus resulting in a difference between V+ and V-
+			- Op-amp executes
+		5. The result is that the load receives the proper amount of current and [ V_out = V_in ] 
+- FILTERING
+	- Anti-aliasing filters are used to maintain signal integrity and preventing folding back of frequencies
+	- e.g.
+		- X_c = \frac{1}{2pifC}
+

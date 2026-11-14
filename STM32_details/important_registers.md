@@ -23,3 +23,5 @@ RM = Reference Manual
 2. Write the 4-bits from AF table in DS into the associated section in register
     - Ports contain 8 GPIOs each
 3. Configure peripheral specifics
+
+## SWDIO Software Debugging

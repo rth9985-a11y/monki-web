@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flex band preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0c; --fg: #f4f4f4; --muted: #9a9a9a; --line: rgba(255,255,255,.55);
+    --chip: rgba(0,0,0,.55); --edge: #ffffff; --accent: #ff2d2d;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --chip:rgba(0,0,0,.55); --edge:#ffffff; } }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --chip:rgba(255,255,255,.75); --edge:#111111; } }
+  :root[data-theme="dark"] { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --chip:rgba(0,0,0,.55); --edge:#ffffff; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--fg); font: 13px ui-monospace, "SF Mono", Menlo, monospace; overflow: hidden; }
+  #stage { position: absolute; inset: 0; }
+  canvas { display: block; touch-action: none; }
+  header { position: absolute; left: 20px; top: calc(16px + env(safe-area-inset-top, 0px)); pointer-events: none; }
+  h1 { margin: 0; font: 700 28px "Doto", ui-monospace, monospace; letter-spacing: .02em; }
+  h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); margin-left: 8px; }
+  header p { margin: 6px 0 0; color: var(--muted); max-width: 30ch; line-height: 1.4; }
+  .bar { position: absolute; left: 0; right: 0; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; justify-content: center; }
+  button { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .lbl { position: absolute; left: 0; top: 0; padding: 1px 7px; border: 1px solid var(--line); border-radius: 99px; background: var(--chip); font-size: 10px; white-space: nowrap; pointer-events: none; will-change: transform; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<header>
+  <h1>Flex band<i></i></h1>
+  <p>Drag to orbit, scroll to zoom. Clear shell, flex PCB inside.</p>
+</header>
+<div class="bar">
+  <button id="bXray" aria-pressed="false">X-ray</button>
+  <button id="bLabels" aria-pressed="true">Labels</button>
+  <button id="bSpin" aria-pressed="true">Spin</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+/* ---- Spec (mm). Values marked est. are package-size estimates. ---- */
+const SPEC = {
+  a: 29, b: 22.5,                       // inner wrist ellipse semi-axes
+  shellT: 7.5, bandW: 24,
+  display: { arc: 34.1, width: 17.0 },  // 1.5" 120x240 flexible OLED
+  pcb: { width: 20, thick: 0.2, off: 4.4 },
+  battery: [22, 15, 4]                  // KP-401522
+};
+const MM = 0.1, RED = "#ff2d2d";
+const A = SPEC.a, B = SPEC.b;
+
+/* ---- Arc-length parametrisation of the ellipse ---- */
+const N = 720, TS = [], SS = [0];
+for (let i = 0; i <= N; i++) {
+  const t = 2 * Math.PI * i / N; TS.push(t);
+  if (i > 0) { const p = t - Math.PI / N; SS.push(SS[i-1] + Math.hypot(A*Math.cos(p), B*Math.sin(p)) * (2*Math.PI/N)); }
+}
+const C = SS[N];
+function tAt(s) {
+  s = ((s % C) + C) % C; let lo = 0, hi = N;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (SS[m] <= s) lo = m; else hi = m; }
+  return TS[lo] + (s - SS[lo]) / (SS[hi] - SS[lo] || 1) * (TS[hi] - TS[lo]);
+}
+function frameAt(s, off = 0) {
+  const t = tAt(s), sx = Math.sin(t), cy = Math.cos(t);
+  let nx = sx / A, ny = cy / B; const l = Math.hypot(nx, ny); nx /= l; ny /= l;
+  return { x: A*sx + nx*off, y: B*cy + ny*off, rot: Math.atan2(-nx, ny), nx, ny };
+}
+function ribbon(s0, s1, w, off, seg) {
+  const pos = [], nor = [], uv = [], idx = [];
+  for (let i = 0; i <= seg; i++) {
+    const f = frameAt(s0 + (s1 - s0) * i / seg, off);
+    for (let j = 0; j < 2; j++) { pos.push(f.x, f.y, (j - .5) * w); nor.push(f.nx, f.ny, 0); uv.push(i / seg, 1 - j); }
+    if (i < seg) { const k = i * 2; idx.push(k, k+1, k+2, k+1, k+3, k+2); }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3));
+  g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx); return g;
+}
+
+/* ---- Textures ---- */
+function tex(c) { const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; return t; }
+function dotMatrix() {
+  const W = 240, H = 120, cell = 4, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"), t = document.createElement("canvas"); t.width = W/cell; t.height = H/cell;
+  const tx = t.getContext("2d"); tx.fillStyle = "#fff"; tx.textBaseline = "top";
+  tx.font = "bold 19px monospace"; tx.fillText("10:42", 3, 1);
+  tx.font = "bold 8px monospace"; tx.fillText("72 BPM", 3, 21);
+  const d = tx.getImageData(0, 0, t.width, t.height).data;
+  x.fillStyle = "#000"; x.fillRect(0, 0, W, H);
+  for (let j = 0; j < t.height; j++) for (let i = 0; i < t.width; i++) {
+    const on = d[(j*t.width + i)*4 + 3] > 110;
+    x.fillStyle = on ? "#fff" : "#1b1b1b"; x.beginPath();
+    x.arc(i*cell + cell/2, j*cell + cell/2, on ? 1.55 : .8, 0, 6.283); x.fill();
+  }
+  x.fillStyle = RED; x.beginPath(); x.arc(W-12, 12, 3.2, 0, 6.283); x.fill();
+  return tex(c);
+}
+function pcbTex() {
+  const W = 2048, H = Math.round(W * SPEC.pcb.width / C), c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"); x.fillStyle = "#c98a1c"; x.fillRect(0, 0, W, H);
+  let seed = 7; const r = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  x.strokeStyle = "#f2c76b"; x.lineWidth = 3; x.lineJoin = "round";
+  for (let k = 0; k < 28; k++) {
+    let y = (k + .5) * H / 28, px = 0; x.beginPath(); x.moveTo(0, y);
+    while (px < W) { px += 60 + r()*220; x.lineTo(px, y); if (r() > .55) { y += (r() - .5)*28; x.lineTo(px + 14, y); } }
+    x.stroke();
+  }
+  x.fillStyle = "#f2c76b"; for (let k = 0; k < 140; k++) { x.beginPath(); x.arc(r()*W, r()*H, 3.5, 0, 6.283); x.fill(); }
+  x.fillStyle = RED; x.beginPath(); x.arc(40, 40, 6, 0, 6.283); x.fill();
+  return tex(c);
+}
+
+/* ---- Scene ---- */
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, .1, 100); camera.position.set(0, 6, 9);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enablePan = false; controls.minDistance = 5; controls.maxDistance = 18;
+controls.autoRotate = true; controls.autoRotateSpeed = .8; controls.enableDamping = true;
+scene.add(new THREE.AmbientLight(0xffffff, .7));
+const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(4, 8, 6); scene.add(key);
+const rim = new THREE.DirectionalLight(0xffffff, .6); rim.position.set(-6, 2, -5); scene.add(rim);
+
+const root = new THREE.Group(); root.scale.setScalar(MM); scene.add(root);
+
+// Shell
+const T = SPEC.shellT, shape = new THREE.Shape();
+shape.absellipse(0, 0, A + T, B + T, 0, Math.PI * 2, false, 0);
+const hole = new THREE.Path(); hole.absellipse(0, 0, A, B, 0, Math.PI * 2, true, 0); shape.holes.push(hole);
+const shellGeo = new THREE.ExtrudeGeometry(shape, { depth: SPEC.bandW, bevelEnabled: false, curveSegments: 160 });
+shellGeo.translate(0, 0, -SPEC.bandW / 2);
+const shellMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .16, roughness: .08, clearcoat: 1, clearcoatRoughness: .05, depthWrite: false, side: THREE.DoubleSide });
+const shell = new THREE.Mesh(shellGeo, shellMat); shell.renderOrder = 2; root.add(shell);
+const edgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
+const edges = new THREE.LineSegments(new THREE.EdgesGeometry(shellGeo, 12), edgeMat); edges.renderOrder = 3; root.add(edges);
+
+// Flex PCB (full loop) and display
+root.add(new THREE.Mesh(ribbon(0, C, SPEC.pcb.width, SPEC.pcb.off, 720),
+  new THREE.MeshStandardMaterial({ map: pcbTex(), roughness: .5, side: THREE.DoubleSide })));
+root.add(new THREE.Mesh(ribbon(-SPEC.display.arc/2, SPEC.display.arc/2, SPEC.display.width, 5.6, 48),
+  new THREE.MeshBasicMaterial({ map: dotMatrix(), side: THREE.DoubleSide })));
+
+// Chips + labels
+const labels = [];
+function chip(s, size, label, o = {}) {
+  const dir = o.dir || 1, [l, w, h] = size;
+  const f = frameAt(s, SPEC.pcb.off + dir * (SPEC.pcb.thick / 2 + h / 2));
+  const g = new THREE.Group(); g.position.set(f.x, f.y, 0); g.rotation.z = f.rot; root.add(g);
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(l, h, w),
+    new THREE.MeshStandardMaterial({ color: o.color || 0x1a1a1a, roughness: .45, metalness: .2 })));
+  const el = document.createElement("div"); el.className = "lbl"; el.textContent = label; stage.appendChild(el);
+  labels.push({ el, g, p: new THREE.Vector3(0, dir * (o.ly || 9), o.lz || 0) });
+  return g;
+}
+chip(26,  [7, 7, .7],        "STM32U3C5CI");
+chip(40,  [3, 3, .9],        "STBC03",        { lz: 5 });
+chip(54,  [6, 5, .8],        "W25Q128JV");
+chip(-26, [2, 2, .74],       "LIS2DUX12",     { lz: -5 });
+chip(-42, [11.5, 13.5, 2],   "BLUENRG-M2SA",  { color: 0x222222 });
+chip(-66, SPEC.battery,      "KP-401522 · 180 mAh", { dir: -1, color: 0x3b3b3b });
+const opt = chip(C / 2, [9, 7, 1.4], "MAX86141", { dir: -1, color: 0x101010, ly: 8 });
+[-2, 2].forEach(z => { const m = new THREE.Mesh(new THREE.SphereGeometry(.7, 16, 16), new THREE.MeshBasicMaterial({ color: 0x27ff7a })); m.position.set(0, -.75, z); opt.add(m); });
+
+/* ---- UI ---- */
+function toggle(id, fn) {
+  const b = document.getElementById(id);
+  b.addEventListener("click", () => { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", on); fn(on); });
+}
+toggle("bXray", on => shellMat.opacity = on ? .07 : .16);
+toggle("bLabels", on => labels.forEach(l => l.el.style.display = on ? "" : "none"));
+toggle("bSpin", on => controls.autoRotate = on);
+
+function themeEdge() { edgeMat.color.set(getComputedStyle(document.documentElement).getPropertyValue("--edge").trim() || "#fff"); }
+themeEdge();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeEdge);
+
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+
+const v = new THREE.Vector3();
+(function loop() {
+  requestAnimationFrame(loop);
+  controls.update(); renderer.render(scene, camera);
+  const w = innerWidth, h = innerHeight;
+  labels.forEach(({ el, g, p }) => {
+    v.copy(p); g.localToWorld(v); v.project(camera);
+    el.style.transform = `translate(${(v.x * .5 + .5) * w}px, ${(-v.y * .5 + .5) * h}px) translate(-50%, -50%)`;
+  });
+})();
+</script>
+</body>
+</html>

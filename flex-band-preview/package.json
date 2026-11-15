@@ -1,0 +1,11 @@
+{
+  "name": "flex-band-preview",
+  "version": "1.0.0",
+  "description": "Parametric 3D model of a flexible Nothing-style fitness band with exposed flex PCB",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "export:glb": "node scripts/export-glb.mjs"
+  },
+  "devDependencies": { "three": "^0.160.0" }
+}

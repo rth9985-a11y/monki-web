@@ -4,44 +4,106 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Flex band preview</title>
-<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Nabla&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0b0b0c; --fg: #f4f4f4; --muted: #9a9a9a; --line: rgba(255,255,255,.55);
-    --chip: rgba(0,0,0,.55); --edge: #ffffff; --accent: #ff2d2d;
+    --chip: rgba(0,0,0,.55); --edge: #ffffff; --accent: #ffe135;
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --chip:rgba(0,0,0,.55); --edge:#ffffff; } }
-  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --chip:rgba(255,255,255,.75); --edge:#111111; } }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --accent:#e6b800; --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --chip:rgba(255,255,255,.75); --edge:#111111; } }
   :root[data-theme="dark"] { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --chip:rgba(0,0,0,.55); --edge:#ffffff; }
-  html, body { height: 100%; margin: 0; }
-  body { background: var(--bg); color: var(--fg); font: 13px ui-monospace, "SF Mono", Menlo, monospace; overflow: hidden; }
+  html { scroll-behavior: smooth; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
+  #hero { position: relative; height: 100svh; overflow: hidden; }
   #stage { position: absolute; inset: 0; }
   canvas { display: block; touch-action: none; }
-  header { position: absolute; left: 20px; top: calc(16px + env(safe-area-inset-top, 0px)); pointer-events: none; }
-  h1 { margin: 0; font: 700 28px "Doto", ui-monospace, monospace; letter-spacing: .02em; }
-  h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); margin-left: 8px; }
-  header p { margin: 6px 0 0; color: var(--muted); max-width: 30ch; line-height: 1.4; }
-  .bar { position: absolute; left: 0; right: 0; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; justify-content: center; }
-  button { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; cursor: pointer; }
-  button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
-  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  header { position: absolute; left: 20px; top: 16px; pointer-events: none; }
+  h1 { margin: 0; font: 400 44px/1 "Nabla", ui-monospace, monospace; }
+  h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px var(--line); margin-left: 8px; }
+  header p { margin: 10px 0 0; color: var(--muted); max-width: 36ch; font: 10px/1.8 "Michroma", ui-monospace, monospace; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; gap: 8px; justify-content: center; }
+  button, a.pill { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+  button[aria-pressed="true"], a.pill:hover { background: var(--fg); color: var(--bg); }
+  button:focus-visible, a.pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  nav { position: absolute; right: 20px; top: 16px; display: flex; gap: 8px; }
+  @media (max-width: 560px) {
+    #hero { height: 82svh; }
+    nav { top: auto; bottom: 64px; left: 0; right: 0; justify-content: center; }
+  }
+  #about { max-width: 68ch; margin: 0 auto; padding: 72px 20px 96px; }
+  #about h2 { margin: 0 0 16px; font: 400 44px/1.1 "Nabla", ui-monospace, monospace; }
+  #about h3 { margin: 36px 0 8px; font: 12px/1.5 "Michroma", ui-monospace, monospace; }
+  #about p, #about li { color: var(--muted); font: 11px/1.9 "Michroma", ui-monospace, monospace; }
+  #about ul { margin: 0; padding-left: 18px; }
+  #about dl { font: 11px/1.9 "Michroma", ui-monospace, monospace; display: grid; grid-template-columns: max-content 1fr; gap: 6px 24px; margin: 0; }
+  #about dt { color: var(--fg); }
+  #about dd { margin: 0; color: var(--muted); }
+  #about a { color: var(--fg); text-underline-offset: 3px; }
+  #about a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .lbl { position: absolute; left: 0; top: 0; padding: 1px 7px; border: 1px solid var(--line); border-radius: 99px; background: var(--chip); font-size: 10px; white-space: nowrap; pointer-events: none; will-change: transform; }
 </style>
 </head>
 <body>
-<div id="stage"></div>
-<header>
-  <h1>Flex band<i></i></h1>
-  <p>Drag to orbit, scroll to zoom. Clear shell, flex PCB inside.</p>
-</header>
-<div class="bar">
-  <button id="bXray" aria-pressed="false">X-ray</button>
-  <button id="bLabels" aria-pressed="true">Labels</button>
-  <button id="bSpin" aria-pressed="true">Spin</button>
-</div>
+<section id="hero">
+  <div id="stage"></div>
+  <header>
+    <h1>Flex band<i></i></h1>
+    <p>Drag to orbit, Ctrl/&#8984; + scroll to zoom. Clear shell, flex PCB inside.</p>
+  </header>
+  <nav aria-label="Page">
+    <a class="pill" href="components.html">Components</a>
+    <a class="pill" href="#about">About</a>
+  </nav>
+  <div class="bar">
+    <button id="bXray" aria-pressed="false">X-ray</button>
+    <button id="bLabels" aria-pressed="true">Labels</button>
+    <button id="bSpin" aria-pressed="true">Spin</button>
+  </div>
+</section>
+
+<main>
+<section id="about" aria-labelledby="aboutTitle">
+  <h2 id="aboutTitle">About</h2>
+  <p>A parametric 3D model of a fully flexible fitness band. The shell is clear, so the flex PCB, the display and every package stay visible. The look follows Nothing: transparent body, exposed internals, a dot-matrix screen and one yellow accent.</p>
+
+  <h3>How to read the model</h3>
+  <ul>
+    <li>The clear loop is the TPU/silicone shell around the wrist.</li>
+    <li>The amber ribbon is the flex PCB. It runs the full loop, mid-stack.</li>
+    <li>The dot-matrix strip on top is the flexible OLED.</li>
+    <li>The battery and the optical heart-rate sensor sit on the skin side.</li>
+    <li>X-ray makes the shell fainter. Labels names each part.</li>
+  </ul>
+
+  <h3>Key dimensions</h3>
+  <dl>
+    <dt>Wrist opening</dt><dd>58 &times; 45 mm ellipse (29 and 22.5 mm semi-axes)</dd>
+    <dt>Shell</dt><dd>7.5 mm thick, 24 mm wide</dd>
+    <dt>Display</dt><dd>1.5&Prime; flexible OLED, 120 &times; 240 px</dd>
+    <dt>Flex PCB</dt><dd>20 mm wide, 0.2 mm thick</dd>
+    <dt>Battery</dt><dd>180 mAh, 22 &times; 15 &times; 4 mm</dd>
+  </dl>
+
+  <h3>Good to know</h3>
+  <ul>
+    <li>Package sizes for the STM32, BlueNRG, MAX86141, STBC03 and W25Q128 are estimates. Check them against the datasheets.</li>
+    <li>Edit <code>SPEC</code> in the page source to resize the band.</li>
+  </ul>
+
+  <h3>Keep exploring</h3>
+  <ul>
+    <li><a href="components.html">See the full component list</a></li>
+    <li><a href="#hero">Back to the model</a></li>
+  </ul>
+</section>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -54,7 +116,7 @@ const SPEC = {
   pcb: { width: 20, thick: 0.2, off: 4.4 },
   battery: [22, 15, 4]                  // KP-401522
 };
-const MM = 0.1, RED = "#ff2d2d";
+const MM = 0.1, ACCENT = "#ffe135";
 const A = SPEC.a, B = SPEC.b;
 
 /* ---- Arc-length parametrisation of the ellipse ---- */
@@ -103,7 +165,7 @@ function dotMatrix() {
     x.fillStyle = on ? "#fff" : "#1b1b1b"; x.beginPath();
     x.arc(i*cell + cell/2, j*cell + cell/2, on ? 1.55 : .8, 0, 6.283); x.fill();
   }
-  x.fillStyle = RED; x.beginPath(); x.arc(W-12, 12, 3.2, 0, 6.283); x.fill();
+  x.fillStyle = ACCENT; x.beginPath(); x.arc(W-12, 12, 3.2, 0, 6.283); x.fill();
   return tex(c);
 }
 function pcbTex() {
@@ -117,7 +179,8 @@ function pcbTex() {
     x.stroke();
   }
   x.fillStyle = "#f2c76b"; for (let k = 0; k < 140; k++) { x.beginPath(); x.arc(r()*W, r()*H, 3.5, 0, 6.283); x.fill(); }
-  x.fillStyle = RED; x.beginPath(); x.arc(40, 40, 6, 0, 6.283); x.fill();
+  x.fillStyle = "#111"; x.beginPath(); x.arc(40, 40, 9, 0, 6.283); x.fill();
+  x.fillStyle = ACCENT; x.beginPath(); x.arc(40, 40, 6, 0, 6.283); x.fill();
   return tex(c);
 }
 
@@ -132,6 +195,13 @@ const camera = new THREE.PerspectiveCamera(35, 1, .1, 100); camera.position.set(
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enablePan = false; controls.minDistance = 5; controls.maxDistance = 18;
 controls.autoRotate = true; controls.autoRotateSpeed = .8; controls.enableDamping = true;
+// Plain scrolling moves the page; hold Ctrl/Cmd to zoom the model instead.
+controls.enableZoom = false;
+renderer.domElement.addEventListener("wheel", e => {
+  if (!(e.ctrlKey || e.metaKey)) return;
+  e.preventDefault();
+  camera.position.setLength(Math.min(18, Math.max(5, camera.position.length() * (1 + e.deltaY * .002))));
+}, { passive: false });
 scene.add(new THREE.AmbientLight(0xffffff, .7));
 const key = new THREE.DirectionalLight(0xffffff, 1.4); key.position.set(4, 8, 6); scene.add(key);
 const rim = new THREE.DirectionalLight(0xffffff, .6); rim.position.set(-6, 2, -5); scene.add(rim);
@@ -189,14 +259,14 @@ function themeEdge() { edgeMat.color.set(getComputedStyle(document.documentEleme
 themeEdge();
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeEdge);
 
-function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 addEventListener("resize", resize); resize();
 
 const v = new THREE.Vector3();
 (function loop() {
   requestAnimationFrame(loop);
   controls.update(); renderer.render(scene, camera);
-  const w = innerWidth, h = innerHeight;
+  const w = stage.clientWidth, h = stage.clientHeight;
   labels.forEach(({ el, g, p }) => {
     v.copy(p); g.localToWorld(v); v.project(camera);
     el.style.transform = `translate(${(v.x * .5 + .5) * w}px, ${(-v.y * .5 + .5) * h}px) translate(-50%, -50%)`;

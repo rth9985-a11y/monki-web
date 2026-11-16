@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>USB-C breakout PCB checklist</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{
+  --bg:#f2f4f0;--panel:#fbfcfa;--ink:#16221c;--mute:#5a6a61;--line:#d3dad3;
+  --pad:#a8741a;--ok:#1d7a4a;--ok-bg:#dcefe3;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0e1824;--panel:#142233;--ink:#e6ece8;--mute:#93a49b;--line:#26394d;--pad:#e0a948;--ok:#5fd39a;--ok-bg:#173a30;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0e1824;--panel:#142233;--ink:#e6ece8;--mute:#93a49b;--line:#26394d;--pad:#e0a948;--ok:#5fd39a;--ok-bg:#173a30;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:0 16px 80px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:14px 0 12px;border-bottom:1px solid var(--line);z-index:5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+h1{font-size:1.25rem;margin:0 0 2px;font-weight:600}
+.sub{color:var(--mute);font-size:.9rem;margin:0 0 10px}
+.bar{display:flex;gap:4px;margin:8px 0}
+.seg{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden;position:relative}
+.seg i{position:absolute;inset:0 auto 0 0;background:var(--pad);width:0;transition:width .25s}
+.seg.done i{background:var(--ok)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.count{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.85rem;color:var(--mute);margin-right:auto}
+button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:6px;cursor:pointer}
+button.primary{background:var(--pad);border-color:var(--pad);color:#16130a;font-weight:600}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--pad);outline-offset:2px}
+section{margin-top:22px}
+section h2{font-size:1.05rem;margin:0;font-weight:600;display:flex;gap:10px;align-items:baseline;justify-content:space-between}
+section h2 small{font:400 .8rem "IBM Plex Mono",ui-monospace,monospace;color:var(--mute)}
+.intro{color:var(--mute);font-size:.92rem;margin:4px 0 8px}
+ul{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+li{border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+label{display:flex;gap:12px;padding:11px 14px;cursor:pointer;align-items:flex-start}
+input[type=checkbox]{appearance:none;flex:none;width:20px;height:20px;margin:2px 0 0;border:2px solid var(--mute);border-radius:50%;background:transparent;cursor:pointer;display:grid;place-items:center}
+input[type=checkbox]:checked{background:var(--ok);border-color:var(--ok)}
+input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.t{display:block}
+.w{display:block;color:var(--mute);font-size:.86rem;margin-top:1px}
+li.done .t{color:var(--mute);text-decoration:line-through;text-decoration-color:var(--line)}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.85em;background:var(--bg);padding:1px 5px;border-radius:4px}
+li.focus{outline:2px solid var(--pad);outline-offset:-2px;border-radius:6px}
+footer{margin-top:28px;color:var(--mute);font-size:.85rem}
+@media (prefers-reduced-motion:reduce){.seg i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<header class="top">
+  <h1>USB-C breakout board checklist</h1>
+  <p class="sub">USB-C 2.0 (data + power), with I2C and SPI pins exposed on headers.</p>
+  <div class="bar" id="bar" aria-hidden="true"></div>
+  <div class="row">
+    <span class="count" id="count" aria-live="polite"></span>
+    <button class="primary" id="next">Jump to next item</button>
+    <button id="reset">Reset</button>
+  </div>
+</header>
+<div id="root"></div>
+<footer>Progress saves in this browser. Tick items in any order, since boards rarely go in a straight line.</footer>
+</main>
+<script>
+var DATA=[
+{t:"1. Decide the basics",i:"Settle these first so later steps don’t get redone.",items:[
+["Write one sentence on what the board does","Example: USB-C powered STM32 board with I2C and SPI headers. This keeps scope from growing."],
+["Pick the MCU (or decide there is none)","If it has USB device support, you can wire D+/D− straight to its USB pins. On STM32 full-speed that is <code>PA12</code> (D+) and <code>PA11</code> (D−)."],
+["Choose which I2C and SPI buses to expose","Check the datasheet alternate-function table so the pins you want actually map to those peripherals."],
+["Choose power budget","USB 2.0 default is 5 V at up to 500 mA. Add up everything you will plug in."],
+["Choose layer count and board size","2 layers is fine for full-speed USB. 4 layers gives an easy solid ground plane."],
+["Pick the fab and read its design rules","Min trace, spacing, drill and stackup. Load them into your CAD before routing."]]},
+{t:"2. Schematic: USB-C",i:"A USB-C receptacle is a connector with two plug orientations, so some pins are doubled.",items:[
+["Use a 16-pin USB 2.0 USB-C receptacle","Fewer pins than the full 24-pin part, and you don’t need SuperSpeed lanes."],
+["Add 5.1 kΩ from CC1 to GND and from CC2 to GND (two separate resistors)","These tell a USB-C host you are a device that wants power. Without them, many hosts supply nothing."],
+["Tie both D+ pins together and both D− pins together","The connector has two of each (one per orientation). Join them right at the connector."],
+["Connect all VBUS pins together and all GND pins together",""],
+["Leave SBU1 and SBU2 unconnected","Not used for USB 2.0 data."],
+["Add ESD protection on D+, D− and VBUS","A low-capacitance array like USBLC6-2SC6, placed at the connector."],
+["Decide on shield connection","Commonly to GND through a ferrite bead or RC. Keep it simple for a first board."],
+["Optional: add a resettable fuse on VBUS","Protects the host port and the board if something shorts."],
+["Add bulk and bypass capacitors on VBUS","Near the connector, so cable plug-in surges are absorbed."]]},
+{t:"3. Schematic: power",i:"Turn 5 V from USB into the 3.3 V that the chip and sensors use.",items:[
+["Pick a 3.3 V regulator that covers your max current with headroom","Check dropout voltage, since 5 V to 3.3 V leaves 1.7 V of margin."],
+["Place the input and output capacitors the datasheet asks for","Value and ESR type matter for LDO stability."],
+["Add a power LED with its series resistor","Quick sanity check that the rail is alive."],
+["Add test points for 5 V, 3.3 V and GND","You will want these on bring-up day."],
+["Optional: add a jumper or 0 Ω link to isolate 3.3 V","Lets you power the rail from a bench supply for debugging."]]},
+{t:"4. Schematic: MCU support (skip if no MCU)",i:"The small parts that let a microcontroller start up reliably.",items:[
+["Place a 100 nF cap on every VDD pin, plus a bulk cap nearby",""],
+["Wire VDDA / VREF filtering as the datasheet recommends",""],
+["Add a reset pin pull-up and a reset button","On STM32 the pin is <code>NRST</code>."],
+["Wire BOOT0 with a pull-down and an easy way to pull it high","Lets you use the built-in USB DFU bootloader."],
+["Decide on the clock","USB needs an accurate clock. Use a crystal, or an internal 48 MHz source if your chip supports it (STM32 with HSI48 + CRS)."],
+["Add an SWD header (SWDIO, SWCLK, GND, 3.3 V, NRST)","Your safety net if USB firmware gets stuck."],
+["Add a D+ pull-up if your MCU lacks an internal one","STM32F1 needs an external 1.5 kΩ to 3.3 V."]]},
+{t:"5. Schematic: I2C and SPI headers",i:"This is the point of the board, so make the headers easy to use.",items:[
+["Put SDA and SCL on a header with 3.3 V and GND next to them","I2C is two wires that share a bus, so every device needs a common ground."],
+["Add 4.7 kΩ pull-ups on SDA and SCL","I2C lines only pull low, so the pull-ups bring them back high. Make them removable (DNP footprint or solder jumper) in case the sensor board has its own."],
+["Put SCK, MOSI, MISO and a CS on an SPI header with 3.3 V and GND","Add extra CS pins if you want several devices."],
+["Add a header for any spare GPIO",""],
+["Keep header pitch at 2.54 mm","Works with breadboards and jumper wires."],
+["Mark pin 1 and label every pin by function","Silkscreen labels save you from guessing later."],
+["Note the logic level (3.3 V) on the schematic and silkscreen","5 V parts can damage 3.3 V pins."]]},
+{t:"6. Layout",i:"Placement first, then routing. Do the USB pair before the less fussy signals.",items:[
+["Place the USB-C connector at the board edge",""],
+["Place ESD parts directly at the connector, before the traces go anywhere else","The protection only works if the surge hits it first."],
+["Place decoupling caps as close to MCU power pins as possible","Short loops keep the supply steady."],
+["Keep the crystal close to the MCU, with no other traces underneath",""],
+["Route D+ and D− as a pair: short, side by side, same length, few vias","Target about 90 Ω differential. Full-speed USB is forgiving, so use your fab’s calculator and don’t obsess."],
+["Keep the pair over unbroken ground and away from the regulator or noisy lines",""],
+["Pour a solid ground plane and stitch it with vias",""],
+["Make VBUS and 3.3 V traces wide enough for the current",""],
+["Add mounting holes and keep parts clear of them",""],
+["Check connector footprint matches the exact part number","Mechanical pins and drill sizes vary between USB-C parts."]]},
+{t:"7. Review before ordering",i:"Cheap to fix now, expensive after fabrication.",items:[
+["Run ERC (schematic checks) and fix or explain every warning",""],
+["Run DRC (layout checks) using your fab’s rules, and clear all errors",""],
+["Print the layout at 1:1 on paper and place real parts on it","Catches wrong footprints and header spacing."],
+["Verify polarity and pin 1 markings on ICs, LEDs and connectors",""],
+["Check every part is in stock and matches the BOM",""],
+["Inspect the board in 3D view and the gerber viewer",""],
+["Add the board name, revision and date on the silkscreen",""],
+["Get a second pair of eyes on the schematic",""]]},
+{t:"8. Bring-up when the board arrives",i:"Power on slowly. Most first-board problems show up here.",items:[
+["Look over the board for solder bridges and missing parts",""],
+["With power off, check for a short between VBUS and GND and between 3.3 V and GND","A multimeter in continuity or resistance mode."],
+["Power it from a current-limited supply or a USB port you trust",""],
+["Measure 5 V and 3.3 V at the test points",""],
+["Connect SWD and confirm you can read the chip",""],
+["Check that the computer detects the USB device","If not, look at the CC resistors, D+/D− swap, the pull-up and the clock."],
+["Scan the I2C bus with a known sensor",""],
+["Test SPI with a loopback (MOSI wired to MISO) or a known device",""],
+["Write down what went wrong and what you’d change for rev B",""]]}
+];
+var KEY="pcb-checklist-usbc-v1",state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+var root=document.getElementById("root"),bar=document.getElementById("bar");
+var all=[];
+DATA.forEach(function(s,si){
+  var sec=document.createElement("section");
+  var h=document.createElement("h2");h.innerHTML='<span>'+s.t+'</span><small></small>';
+  var p=document.createElement("p");p.className="intro";p.textContent=s.i;
+  var ul=document.createElement("ul");
+  s.items.forEach(function(it,ii){
+    var id=si+"-"+ii,li=document.createElement("li"),lb=document.createElement("label");
+    var cb=document.createElement("input");cb.type="checkbox";cb.checked=!!state[id];
+    var tx=document.createElement("span");
+    tx.innerHTML='<span class="t">'+it[0]+'</span>'+(it[1]?'<span class="w">'+it[1]+'</span>':'');
+    lb.appendChild(cb);lb.appendChild(tx);li.appendChild(lb);ul.appendChild(li);
+    cb.addEventListener("change",function(){state[id]=cb.checked;save();update()});
+    all.push({id:id,si:si,cb:cb,li:li});
+  });
+  sec.appendChild(h);sec.appendChild(p);sec.appendChild(ul);root.appendChild(sec);
+  var seg=document.createElement("div");seg.className="seg";seg.innerHTML="<i></i>";bar.appendChild(seg);
+  s.small=h.querySelector("small");s.seg=seg;
+});
+function update(){
+  var done=0;
+  DATA.forEach(function(s,si){
+    var items=all.filter(function(a){return a.si===si}),d=items.filter(function(a){return a.cb.checked}).length;
+    s.small.textContent=d+"/"+items.length;
+    s.seg.firstChild.style.width=(100*d/items.length)+"%";
+    s.seg.classList.toggle("done",d===items.length);
+    done+=d;
+  });
+  all.forEach(function(a){a.li.classList.toggle("done",a.cb.checked)});
+  document.getElementById("count").textContent=done+" of "+all.length+" done";
+}
+document.getElementById("next").addEventListener("click",function(){
+  var n=all.filter(function(a){return !a.cb.checked})[0];
+  all.forEach(function(a){a.li.classList.remove("focus")});
+  if(!n){document.getElementById("count").textContent="All done. Nice work.";return}
+  n.li.classList.add("focus");n.li.scrollIntoView({behavior:"smooth",block:"center"});
+});
+document.getElementById("reset").addEventListener("click",function(){
+  if(!confirm("Clear all checkmarks?"))return;
+  state={};save();all.forEach(function(a){a.cb.checked=false;a.li.classList.remove("focus")});update();
+});
+update();
+</script>
+</body>
+</html>

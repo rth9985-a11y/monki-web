@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About · Flex band</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Nabla&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0c; --fg: #f4f4f4; --head: #fff; --pal: --nd; --muted: #9a9a9a; --line: rgba(255,255,255,.55); --rule: rgba(255,255,255,.14); --accent: #ffe135;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b0b0c; --fg:#f4f4f4; --head:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --rule:rgba(255,255,255,.14); } }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --head:#000; --pal:--nl; --accent:#e6b800; --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --rule:rgba(0,0,0,.14); } }
+  :root[data-theme="dark"] { --head:#fff; --pal:--nd; --bg:#0b0b0c; --fg:#f4f4f4; --head:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --rule:rgba(255,255,255,.14); }
+  @font-palette-values --nd { font-family: "Nabla"; override-colors: 0 #fff, 1 #fff, 2 #fff, 3 #fff, 4 #fff, 5 #fff, 6 #fff, 7 #fff, 8 #fff, 9 #fff, 10 #fff, 11 #fff, 12 #fff, 13 #fff, 14 #fff, 15 #fff; }
+  @font-palette-values --nl { font-family: "Nabla"; override-colors: 0 #000, 1 #000, 2 #000, 3 #000, 4 #000, 5 #000, 6 #000, 7 #000, 8 #000, 9 #000, 10 #000, 11 #000, 12 #000, 13 #000, 14 #000, 15 #000; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 16px 20px 96px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  a.pill { font: inherit; color: var(--fg); border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; text-decoration: none; display: inline-block; }
+  a.pill:hover { background: var(--fg); color: var(--bg); }
+  a.pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  h1 { margin: 24px 0 0; color: var(--head); font: 400 44px/1.1 "Nabla", ui-monospace, monospace; font-palette: var(--pal); }
+  h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px var(--line); margin-left: 8px; }
+  section { padding-top: 40px; border-top: 1px solid var(--rule); margin-top: 40px; }
+  h2 { margin: 0 0 12px; font: 12px/1.5 "Michroma", ui-monospace, monospace; }
+  p { margin: 0 0 12px; color: var(--muted); font: 11px/1.9 "Michroma", ui-monospace, monospace; }
+  .ph { border: 1px dashed var(--line); border-radius: 12px; padding: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; border: 1px dashed var(--line); margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="pill" href="index.html">Back to model</a>
+    <a class="pill" href="components.html">Components</a>
+  </div>
+
+  <h1>About<i></i></h1>
+
+  <section aria-labelledby="mission">
+    <h2 id="mission">Mission</h2>
+    <p class="ph">We made Monki because we believe tracking your health should be entirely subscription free, and all your data should be under the control of one person: you.</p>
+  
+  </section>
+
+  <section aria-labelledby="bio">
+    <h2 id="bio">Bio</h2>
+    <p class="ph">Two students based in NYC looking to branch out and make something they would actually use.</p>
+  </section>
+
+  <section aria-labelledby="team">
+    <h2 id="team">Team</h2>
+    <div class="grid">
+      <div class="ph"><div class="avatar"></div><p>[Name]<br>[Role]</p></div>
+      <div class="ph"><div class="avatar"></div><p>[Name]<br>[Role]</p></div>
+  
+    </div>
+  </section>
+
+  <section aria-labelledby="contact">
+    <h2 id="contact">Contact</h2>
+    <p class="ph">Contact us: lukaneal15436@gmail.com Reese Email</p>
+  </section>
+</div>
+</body>
+</html>

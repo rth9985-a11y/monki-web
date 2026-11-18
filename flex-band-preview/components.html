@@ -9,18 +9,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Nabla&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0b0c; --fg: #f4f4f4; --muted: #9a9a9a; --line: rgba(255,255,255,.55); --rule: rgba(255,255,255,.14); --accent: #ffe135;
+    --bg: #0b0b0c; --fg: #f4f4f4; --muted: #9a9a9a; --line: rgba(255,255,255,.55); --rule: rgba(255,255,255,.14); --accent: #ffe135; --head: #fff; --pal: --nd;
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --rule:rgba(255,255,255,.14); } }
-  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --accent:#e6b800; --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --rule:rgba(0,0,0,.14); } }
-  :root[data-theme="dark"] { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --rule:rgba(255,255,255,.14); }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --head:#000; --pal:--nl; --accent:#e6b800; --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --rule:rgba(0,0,0,.14); } }
+  :root[data-theme="dark"] { --head:#fff; --pal:--nd; --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --rule:rgba(255,255,255,.14); }
+  @font-palette-values --nd { font-family: "Nabla"; override-colors: 0 #fff, 1 #fff, 2 #fff, 3 #fff, 4 #fff, 5 #fff, 6 #fff, 7 #fff, 8 #fff, 9 #fff, 10 #fff, 11 #fff, 12 #fff, 13 #fff, 14 #fff, 15 #fff; }
+  @font-palette-values --nl { font-family: "Nabla"; override-colors: 0 #000, 1 #000, 2 #000, 3 #000, 4 #000, 5 #000, 6 #000, 7 #000, 8 #000, 9 #000, 10 #000, 11 #000, 12 #000, 13 #000, 14 #000, 15 #000; }
   body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
   .wrap { max-width: 980px; margin: 0 auto; padding: 16px 20px 72px; }
   .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  h1 { margin: 24px 0 0; font: 400 44px/1.1 "Nabla", ui-monospace, monospace; }
+  h1 { margin: 24px 0 0; color: var(--head); font: 400 44px/1.1 "Nabla", ui-monospace, monospace; font-palette: var(--pal); }
   h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px var(--line); margin-left: 8px; }
   .lede { margin: 12px 0 24px; color: var(--muted); max-width: 60ch; font: 11px/1.9 "Michroma", ui-monospace, monospace; }
   button, a.pill { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
@@ -45,7 +47,7 @@
   </div>
 
   <h1>Components<i></i></h1>
-  <p class="lede">Everything inside the band, from the clear shell to each chip on the flex PCB.</p>
+  <p class="lede">Everything inside the band, from the clear shell to each chip on the flexible PCB.</p>
 
   <div class="filters" role="group" aria-label="Filter components">
     <button aria-pressed="true" data-f="all">All</button>
@@ -74,7 +76,7 @@
   </table>
   </div>
 
-  <p class="note">Sizes marked est. are package-size estimates. Check them against the datasheets.</p>
+  <p class="note">All parts are being used in a prototype. Parts are subject to change.</p>
 </div>
 
 <script>

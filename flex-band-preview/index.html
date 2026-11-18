@@ -7,241 +7,74 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Nabla&display=swap" rel="stylesheet">
-
 <style>
-:root {
-  --bg: #0b0b0c; --fg: #f4f4f4; --muted: #9a9a9a; --line: rgba(255,255,255,.55);
-  --chip: rgba(0,0,0,.55); --edge: #ffffff; --accent: #ffe135; --head: #f4f4f4;
-  box-sizing: border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  --head-shadow: none;
-}
+  :root {
+    --bg: #0b0b0c; --fg: #f4f4f4; --muted: #9a9a9a; --line: rgba(255,255,255,.55);
+    --chip: rgba(0,0,0,.55); --edge: #ffffff; --accent: #ffe135; --head: #fff; --pal: --nd;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --chip:rgba(0,0,0,.55); --edge:#ffffff; } }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --head:#000; --pal:--nl; --accent:#ffe135; --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --chip:rgba(255,255,255,.75); --edge:#111111; } }
+  :root[data-theme="dark"] { --head:#fff; --pal:--nd; --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --chip:rgba(0,0,0,.55); --edge:#ffffff; }
 
-@font-palette-values --nabla-dark {
-  font-family: "Nabla";
-  override-colors: 0 #ffe135, 1 #ffe135, 2 #fff, 3 #ffe135, 4 #ffe135, 5 #ffe135, 6 #ffe135, 7 #ffe135;
-}
-@font-palette-values --nabla-light {
-  font-family: "Nabla";
-  override-colors: 0 #000, 1 #000, 2 #000, 3 #000, 4 #000, 5 #000, 6 #000, 7 #000;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg:#0b0b0c; --fg:#f4f4f4;
-    --muted:#9a9a9a;
-    --line:rgba(255,255,255,.55);
-    --chip:rgba(0,0,0,.55);
-    --edge:#ffffff;
-  }
-  :root:not([data-theme="light"]) h1,
-  :root:not([data-theme="light"]) #overview h2 { font-palette: --nabla-dark; }
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --head:#000;
-    --head-shadow: 0 0 2px #fff, 0 0 8px #fff;
-    --accent:#ffe135;
-    --bg:#ececea;
-    --fg:#111;
-    --muted:#666;
-    --line:rgba(0,0,0,.5);
-    --chip:rgba(255,255,255,.75);
-    --edge:#111111;
-  }
-  :root:not([data-theme="dark"]) h1,
-  :root:not([data-theme="dark"]) #overview h2 { font-palette: --nabla-light; }
-}
-
-:root[data-theme="dark"] {
-  --bg:#0b0b0c;
-  --fg:#f4f4f4;
-  --muted:#9a9a9a;
-  --line:rgba(255,255,255,.55);
-  --chip:rgba(0,0,0,.55);
-  --edge:#ffffff;
-}
-  html { 
-    scroll-behavior: smooth; scroll-padding-top: env(safe-area-inset-top, 0px);
-  }
-  @media (prefers-reduced-motion: reduce) { 
-    html { scroll-behavior: auto; } 
-  }
-  body { 
-    margin: 0; 
-    background: var(--bg); 
-    color: var(--fg); 
-    font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; 
-  }
-  #hero { position: relative; 
-    height: 100svh; 
-    overflow: hidden; 
-  }
-  #stage { 
-    position: absolute; 
-    inset: 0;
-  }
-  canvas { 
-    display: block; 
-    touch-action: none; 
-  }
-  header { 
-    position: absolute; 
-    left: 20px; 
-    top: 16px; 
-    pointer-events: none; 
-  }
-  h1 { 
-    margin: 0; 
-    color: var(--head); 
-    text-shadow: var(--head-shadow);
-    font: 400 44px/1 "Nabla", ui-monospace, monospace; 
-  }
-  h1 i { 
-    display: inline-block; 
-    width: 9px; 
-    height: 9px; 
-    border-radius: 50%; 
-    background: var(--accent); 
-    box-shadow: 0 0 0 1px var(--line); 
-    margin-left: 8px; 
-  }
-  header p { 
-    margin: 10px 0 0; 
-    color: var(--head); 
-    max-width: 36ch; 
-    font: 10px/1.8 "Michroma", ui-monospace, monospace; 
-  }
-  .bar { 
-    position: absolute; 
-    left: 0; 
-    right: 0; 
-    bottom: 18px; 
-    display: flex; 
-    gap: 8px; 
-    justify-content: center; 
-  }
-  button, a.pill { 
-    font: inherit; 
-    color: var(--fg); 
-    background: transparent; 
-    border: 1px solid var(--line); 
-    border-radius: 99px; 
-    padding: 7px 16px; 
-    cursor: pointer; 
-    text-decoration: none; 
-    display: inline-block; 
-  }
-  button[aria-pressed="true"], a.pill:hover { 
-    background: var(--fg); 
-    color: var(--bg); 
-  }
-  button:focus-visible, a.pill:focus-visible { 
-    outline: 2px solid var(--accent); 
-    outline-offset: 2px; 
-  }
-  nav { 
-    position: absolute; 
-    right: 20px; 
-    top: 16px; 
-    display: flex; 
-    gap: 8px; 
-  }
-  .down { 
-    position: absolute; 
-    left: 50%; 
-    bottom: 64px; 
-    width: 40px; 
-    height: 40px; 
-    display: grid; 
-    place-items: center; 
-    color: var(--fg); 
-    border-radius: 50%; 
-    animation: bob 1.8s ease-in-out infinite; 
-  }
-  .down svg { 
-    width: 22px; 
-    height: 22px; 
-  }
-  .down:focus-visible { 
-    outline: 2px solid var(--accent); 
-    outline-offset: 2px; 
-  }
-  @keyframes bob { 
-    0%, 100% { transform: translate(-50%, 0); } 
-    50% { transform: translate(-50%, 8px); } 
-  }
-  @media (prefers-reduced-motion: reduce) { 
-    .down { animation: none; transform: translateX(-50%); } 
-  }
+  @font-palette-values --nd { font-family: "Nabla"; override-colors: 0 #fff, 1 #fff, 2 #fff, 3 #fff, 4 #fff, 5 #fff, 6 #fff, 7 #fff, 8 #fff, 9 #fff, 10 #fff, 11 #fff, 12 #fff, 13 #fff, 14 #fff, 15 #fff; }
+  @font-palette-values --nl { font-family: "Nabla"; override-colors: 0 #000, 1 #000, 2 #000, 3 #000, 4 #000, 5 #000, 6 #000, 7 #000, 8 #000, 9 #000, 10 #000, 11 #000, 12 #000, 13 #000, 14 #000, 15 #000; }
+  html { scroll-behavior: smooth; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
+  #hero { position: relative; height: 100svh; overflow: hidden; }
+  #stage { position: absolute; inset: 0; }
+  canvas { display: block; touch-action: none; }
+  header { position: absolute; left: 20px; top: 16px; pointer-events: none; }
+  h1 { margin: 0; color: var(--head); font: 400 44px/1 "Nabla", ui-monospace, monospace; font-palette: var(--pal); }
+  h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px var(--line); margin-left: 8px; }
+  header p { margin: 10px 0 0; color: var(--head); max-width: 36ch; font: 10px/1.8 "Michroma", ui-monospace, monospace; }
+  .bar { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; gap: 8px; justify-content: center; }
+  button, a.pill { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+  button[aria-pressed="true"], a.pill:hover { background: var(--fg); color: var(--bg); }
+  button:focus-visible, a.pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .colors { margin-top: 16px; pointer-events: auto; }
+  .colors span { display: block; margin-bottom: 8px; color: var(--head); font: 10px/1.8 "Michroma", ui-monospace, monospace; }
+  .colors div { display: flex; gap: 10px; }
+  .sw { width: 34px; height: 34px; padding: 0; border-radius: 50%; background: linear-gradient(135deg, var(--c1) 50%, var(--c2, #fff) 50%); }
+  .sw.clear { background: linear-gradient(135deg, var(--c1) 50%, transparent 50%), repeating-conic-gradient(#aaa 0 25%, #fff 0 50%) 0 0/8px 8px; }
+  .sw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--fg); }
+  nav { position: absolute; right: 20px; top: 16px; display: flex; gap: 8px; }
+  .down { position: absolute; left: 50%; bottom: 64px; width: 40px; height: 40px; display: grid; place-items: center; color: var(--fg); border-radius: 50%; animation: bob 1.8s ease-in-out infinite; }
+  .down svg { width: 22px; height: 22px; }
+  .down:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @keyframes bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+  @media (prefers-reduced-motion: reduce) { .down { animation: none; transform: translateX(-50%); } }
   @media (max-width: 560px) {
     .down { bottom: 108px; }
     #hero { height: 82svh; }
     nav { top: auto; bottom: 64px; left: 0; right: 0; justify-content: center; }
   }
-  #overview { 
-    max-width: 68ch; 
-    margin: 0 auto; 
-    padding: 72px 20px 96px; 
-  }
-  #overview h2 { 
-    margin: 0 0 16px; 
-    font: 400 44px/1.1 "Nabla", ui-monospace, monospace; 
-  }
-  #overview h3 { 
-    margin: 36px 0 8px; 
-    font: 12px/1.5 "Michroma", ui-monospace, monospace; 
-  }
-  #overview p, #overview li { 
-    color: var(--muted); 
-    font: 11px/1.9 "Michroma", ui-monospace, monospace; 
-  }
-  #overview ul { 
-    margin: 0; 
-    padding-left: 18px; 
-  }
-  #overview dl { 
-    font: 11px/1.9 "Michroma", ui-monospace, monospace; 
-    display: grid; 
-    grid-template-columns: max-content 1fr; 
-    gap: 6px 24px; 
-    margin: 0; 
-  }
+  #overview { max-width: 68ch; margin: 0 auto; padding: 72px 20px 96px; text-align: center; }
+  #overview h2 { margin: 0 0 16px; color: var(--head); font: 400 44px/1.1 "Nabla", ui-monospace, monospace; font-palette: var(--pal); }
+  #overview h3 { margin: 36px 0 8px; font: 12px/1.5 "Michroma", ui-monospace, monospace; }
+  #overview p, #overview li { color: var(--muted); font: 11px/1.9 "Michroma", ui-monospace, monospace; }
+  #overview ul { margin: 0; padding: 0; list-style: none; }
+  #overview dl { font: 11px/1.9 "Michroma", ui-monospace, monospace; display: grid; grid-template-columns: 1fr; gap: 2px; margin: 0; }
   #overview dt { color: var(--fg); }
-  #overview dd { 
-    margin: 0; 
-    color: var(--muted); 
-  }
-  #overview a { 
-    color: var(--fg); 
-    text-underline-offset: 3px; 
-  }
-  #overview a:focus-visible { 
-    outline: 2px solid var(--accent); 
-    outline-offset: 2px; 
-  }
-  .lbl { position: absolute; 
-  left: 0; top: 0; 
-  padding: 1px 7px; 
-  border: 1px solid var(--line); 
-  border-radius: 99px; 
-  background: var(--chip); 
-  font-size: 10px; 
-  white-space: nowrap; 
-  pointer-events: none; 
-  will-change: transform; 
-  }
+  #overview dd { margin: 0 0 12px; color: var(--muted); }
+  #overview a { color: var(--fg); text-underline-offset: 3px; }
+  #overview a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .lbl { position: absolute; left: 0; top: 0; padding: 1px 7px; border: 1px solid var(--line); border-radius: 99px; background: var(--chip); font-size: 10px; white-space: nowrap; pointer-events: none; will-change: transform; }
 </style>
-
 </head>
 <body>
 <section id="hero">
   <div id="stage"></div>
   <header>
-    <h1>monki<i></i></h1>
+    <h1>monki v1<i></i></h1>
     <p>Drag to orbit, Ctrl/&#8984; + scroll to zoom.</p>
+    <div class="colors" role="group" aria-label="Colorway">
+      <span id="cwName"></span>
+      <div id="cw"></div>
+    </div>
   </header>
   <nav aria-label="Page">
     <a class="pill" href="components.html">Components</a>
@@ -256,24 +89,26 @@
 </section>
 
 <main>
-<section id="about" aria-labelledby="overviewTitle">
+<section id="overview" aria-labelledby="overviewTitle">
   <h2 id="overviewTitle">Overview</h2>
-  <p>Your biometrics are your own. No cloud. No prying eyes. All on <i>your</i> device. Monki v1 is designed to move with its wearer. Our flexible design is noticeable only when necessary with no compromise to performance .</p>
+  <p>Your biometrics are your own. No cloud. No prying eyes. All on <i>your</i> device. The Monki v1 is designed to move with its wearer, and our flexible design is noticeable only when necessary, with no compromise to performance .</p>
   <h3>Specifications</h3>
   <ul>
-    <li>The clear loop is the TPU/silicone shell around the wrist.</li>
-    <li>The amber ribbon is the flex PCB. It runs the full loop, mid-stack.</li>
+    <li>The clear head is the TPU/silicone housing around the electronics.</li>
+    <li>The ribbon is the flex PCB. It runs the length of the head, mid-stack.</li>
     <li>The dot-matrix strip on top is the flexible OLED.</li>
     <li>The battery and the optical heart-rate sensor sit on the skin side.</li>
+    <li>The strap adjusts like a watch band: the pin on the buckle sets in any hole along the tail.</li>
     <li>Disassemble pulls every part apart. Labels names each part.</li>
   </ul>
 
   <h3>Key dimensions</h3>
   <dl>
     <dt>Wrist opening</dt><dd>58 &times; 45 mm ellipse (29 and 22.5 mm semi-axes)</dd>
-    <dt>Shell</dt><dd>7.5 mm thick, 24 mm wide</dd>
+    <dt>Head housing</dt><dd>6.6 mm thick, 24 mm wide, 72 mm long</dd>
+    <dt>Strap</dt><dd>3.2 mm thick, 24 mm wide, 6 holes at 5 mm pitch</dd>
     <dt>Display</dt><dd>1.5&Prime; flexible OLED, 120 &times; 240 px</dd>
-    <dt>Flex PCB</dt><dd>20 mm wide, 0.2 mm thick</dd>
+    <dt>Flex PCB</dt><dd>20 mm wide, 0.2 mm thick, 68 mm long</dd>
     <dt>Battery</dt><dd>180 mAh, 22 &times; 15 &times; 4 mm</dd>
   </dl>
 
@@ -286,7 +121,7 @@
 /* ---- Spec (mm). Values marked est. are package-size estimates. ---- */
 const SPEC = {
   a: 29, b: 22.5,                       // inner wrist ellipse semi-axes
-  shellT: 7.5, bandW: 24,
+  shellT: 6.6, bandW: 24,
   display: { arc: 34.1, width: 17.0 },  // 1.5" 120x240 flexible OLED
   pcb: { width: 20, thick: 0.2, off: 4.4 },
   battery: [22, 15, 4]                  // KP-401522
@@ -342,22 +177,21 @@ function dotMatrix() {
     x.fillStyle = col; x.shadowColor = col; x.beginPath();
     x.arc(i*cell + cell/2, j*cell + cell/2, 1.7, 0, 6.283); x.fill();
   }
-  x.fillStyle = ACCENT; x.shadowColor = ACCENT; x.beginPath(); x.arc(W-12, 12, 3.2, 0, 6.283); x.fill();
   return tex(c);
 }
-function pcbTex() {
-  const W = 2048, H = Math.round(W * SPEC.pcb.width / C), c = document.createElement("canvas"); c.width = W; c.height = H;
-  const x = c.getContext("2d"); x.fillStyle = "#c98a1c"; x.fillRect(0, 0, W, H);
+function pcbTex(base = "#c98a1c", trace = "#f2c76b") {
+  const W = 2048, H = Math.round(W * SPEC.pcb.width / PCBLEN), c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"), ks = C / PCBLEN; x.fillStyle = base; x.fillRect(0, 0, W, H);
   let seed = 7; const r = () => (seed = seed * 16807 % 2147483647) / 2147483647;
-  x.strokeStyle = "#f2c76b"; x.lineWidth = 3; x.lineJoin = "round";
+  x.strokeStyle = trace; x.lineWidth = 3 * ks; x.lineJoin = "round";
   for (let k = 0; k < 28; k++) {
     let y = (k + .5) * H / 28, px = 0; x.beginPath(); x.moveTo(0, y);
-    while (px < W) { px += 60 + r()*220; x.lineTo(px, y); if (r() > .55) { y += (r() - .5)*28; x.lineTo(px + 14, y); } }
+    while (px < W) { px += (60 + r()*220) * ks; x.lineTo(px, y); if (r() > .55) { y += (r() - .5)*28*ks; x.lineTo(px + 14*ks, y); } }
     x.stroke();
   }
-  x.fillStyle = "#f2c76b"; for (let k = 0; k < 140; k++) { x.beginPath(); x.arc(r()*W, r()*H, 3.5, 0, 6.283); x.fill(); }
-  x.fillStyle = "#111"; x.beginPath(); x.arc(40, 40, 9, 0, 6.283); x.fill();
-  x.fillStyle = ACCENT; x.beginPath(); x.arc(40, 40, 6, 0, 6.283); x.fill();
+  x.fillStyle = trace; for (let k = 0; k < 140; k++) { x.beginPath(); x.arc(r()*W, r()*H, 3.5*ks, 0, 6.283); x.fill(); }
+  x.fillStyle = "#111"; x.beginPath(); x.arc(40*ks, 40*ks, 9*ks, 0, 6.283); x.fill();
+  x.fillStyle = ACCENT; x.beginPath(); x.arc(40*ks, 40*ks, 6*ks, 0, 6.283); x.fill();
   return tex(c);
 }
 
@@ -385,25 +219,56 @@ const rim = new THREE.DirectionalLight(0xffffff, .6); rim.position.set(-6, 2, -5
 
 const root = new THREE.Group(); root.scale.setScalar(MM); scene.add(root);
 
-// Shell
-const T = SPEC.shellT, shape = new THREE.Shape();
-shape.absellipse(0, 0, A + T, B + T, 0, Math.PI * 2, false, 0);
-const hole = new THREE.Path(); hole.absellipse(0, 0, A, B, 0, Math.PI * 2, true, 0); shape.holes.push(hole);
-const shellGeo = new THREE.ExtrudeGeometry(shape, { depth: SPEC.bandW, bevelEnabled: false, curveSegments: 160 });
-shellGeo.translate(0, 0, -SPEC.bandW / 2);
-const shellMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .16, roughness: .08, clearcoat: 1, clearcoatRoughness: .05, depthWrite: false, side: THREE.DoubleSide });
+// Head housing: two concentric layers (outer clear / skin side tinted). The strap carries on from each end.
+const T = SPEC.shellT, TM = T - 1.8;   // clear outer layer is 1.8 mm thick
+const HEAD = 36, ST = 3.2, PCBLEN = 68;   // head half-length, strap thickness, flex PCB length (mm)
+function arcStrip(s0, s1, r0, r1, w) {      // solid band segment between two radial offsets
+  const n = Math.max(6, Math.ceil(Math.abs(s1 - s0) / 1.2)), sh = new THREE.Shape(), pts = [];
+  for (let i = 0; i <= n; i++) { const f = frameAt(s0 + (s1 - s0) * i / n, r1); pts.push([f.x, f.y]); }
+  for (let i = n; i >= 0; i--) { const f = frameAt(s0 + (s1 - s0) * i / n, r0); pts.push([f.x, f.y]); }
+  pts.forEach(([x, y], i) => i ? sh.lineTo(x, y) : sh.moveTo(x, y));
+  const g = new THREE.ExtrudeGeometry(sh, { depth: w, bevelEnabled: false });
+  g.translate(0, 0, -w / 2); return g;
+}
+const shellMat = () => new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: .16, roughness: .08, clearcoat: 1, clearcoatRoughness: .05, depthWrite: false, side: THREE.DoubleSide });
 // Parts that move when disassembled: vec = offset in mm at full separation.
 const parts = [];
 function addPart(obj, vec) { root.add(obj); parts.push({ obj, base: obj.position.clone(), vec }); return obj; }
-const shell = new THREE.Mesh(shellGeo, shellMat); shell.renderOrder = 2;
 const edgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
-const edges = new THREE.LineSegments(new THREE.EdgesGeometry(shellGeo, 12), edgeMat); edges.renderOrder = 3;
-const shellG = new THREE.Group(); shellG.add(shell, edges);
-addPart(shellG, new THREE.Vector3(0, 0, 70));
+const W = SPEC.bandW, shellG = new THREE.Group();
+const outerMat = shellMat(), innerMat = shellMat();
+[[arcStrip(-HEAD, HEAD, TM, T, W), outerMat], [arcStrip(-HEAD, HEAD, 0, TM, W), innerMat]].forEach(([g, m]) => {
+  const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 2;
+  const ed = new THREE.LineSegments(new THREE.EdgesGeometry(g, 12), edgeMat); ed.renderOrder = 3;
+  shellG.add(mesh, ed);
+});
+addPart(shellG, new THREE.Vector3(0, 0, 80));
 
-// Flex PCB (full loop) and display
-addPart(new THREE.Mesh(ribbon(0, C, SPEC.pcb.width, SPEC.pcb.off, 720),
-  new THREE.MeshStandardMaterial({ map: pcbTex(), roughness: .5, side: THREE.DoubleSide })), new THREE.Vector3(0, 0, 0));
+// Adjustable strap: buckle strap + tail (with holes), joined flat at a pin buckle.
+const strapMat = new THREE.MeshStandardMaterial({ roughness: .65 });
+const hwMat = new THREE.MeshStandardMaterial({ roughness: .3, metalness: .6 });
+const BK = 80;                                      // buckle position along the loop (mm)
+const strapA = new THREE.Group(); strapA.add(new THREE.Mesh(arcStrip(HEAD - 1, BK - 1, 0, ST, W), strapMat));
+addPart(strapA, new THREE.Vector3(0, 0, -40));
+const tail = new THREE.Group();
+tail.add(new THREE.Mesh(arcStrip(BK + 3.4, C - HEAD + 1, 0, ST, W), strapMat));
+for (let i = 0; i < 6; i++) {                       // adjustment holes: dark bore + metal eyelet
+  const f = frameAt(BK + 10 + i * 5, ST + .02), h = new THREE.Group();
+  h.position.set(f.x, f.y, 0); h.rotation.z = f.rot;
+  h.add(new THREE.Mesh(new THREE.CylinderGeometry(1, 1, .2, 20), new THREE.MeshBasicMaterial({ color: 0x050505 })));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(1.2, .3, 8, 20), hwMat); ring.rotation.x = Math.PI / 2; h.add(ring);
+  tail.add(h);
+}
+addPart(tail, new THREE.Vector3(0, 0, 40));
+const bf = frameAt(BK, 1.6), buckle = new THREE.Group();
+buckle.position.set(bf.x, bf.y, 0); buckle.rotation.z = bf.rot;
+[[-2.6, 0, 1.6, 1.6, W + 2.4], [2.6, 0, 1.6, 1.6, W + 2.4], [0, W / 2 + 1.2, 6.8, 1.6, 1.6], [0, -W / 2 - 1.2, 6.8, 1.6, 1.6], [.4, 0, 6.2, 1, 1.3]]
+  .forEach(([x, z, l, h, d], i) => { const m = new THREE.Mesh(new THREE.BoxGeometry(l, h, d), hwMat); m.position.set(x, i === 4 ? 1.3 : 0, z); buckle.add(m); });
+addPart(buckle, new THREE.Vector3(bf.nx * 14, bf.ny * 14, -80));
+
+// Flex PCB (head only) and display
+const pcbMat = new THREE.MeshStandardMaterial({ map: pcbTex(), roughness: .5, side: THREE.DoubleSide });
+addPart(new THREE.Mesh(ribbon(-PCBLEN / 2, PCBLEN / 2, SPEC.pcb.width, SPEC.pcb.off, 240), pcbMat), new THREE.Vector3(0, 0, 0));
 addPart(new THREE.Mesh(ribbon(-SPEC.display.arc/2, SPEC.display.arc/2, SPEC.display.width, 5.6, 48),
   new THREE.MeshBasicMaterial({ map: dotMatrix(), side: THREE.DoubleSide })), new THREE.Vector3(0, 40, 0));
 
@@ -411,22 +276,24 @@ addPart(new THREE.Mesh(ribbon(-SPEC.display.arc/2, SPEC.display.arc/2, SPEC.disp
 const labels = [];
 function chip(s, size, label, o = {}) {
   const dir = o.dir || 1, [l, w, h] = size;
-  const f = frameAt(s, SPEC.pcb.off + dir * (SPEC.pcb.thick / 2 + h / 2));
+  const lift = dir < 0 ? l * l / 296 + .1 : 0;   // skin-side parts clear the board's curvature
+  const f = frameAt(s, SPEC.pcb.off + dir * (SPEC.pcb.thick / 2 + h / 2) - lift);
   const g = new THREE.Group(); g.position.set(f.x, f.y, 0); g.rotation.z = f.rot;
-  const ex = o.ex || 24; addPart(g, new THREE.Vector3(f.nx * dir * ex, f.ny * dir * ex, o.ez || 0));
+  const ex = o.ex || 24, et = o.et || 0;
+  addPart(g, new THREE.Vector3(f.nx * dir * ex + f.ny * et, f.ny * dir * ex - f.nx * et, o.ez || 0));
   g.add(new THREE.Mesh(new THREE.BoxGeometry(l, h, w),
     new THREE.MeshStandardMaterial({ color: o.color || 0x1a1a1a, roughness: .45, metalness: .2 })));
   const el = document.createElement("div"); el.className = "lbl"; el.textContent = label; stage.appendChild(el);
   labels.push({ el, g, p: new THREE.Vector3(0, dir * (o.ly || 9), o.lz || 0) });
   return g;
 }
-chip(26,  [7, 7, .7],        "STM32U3C5CI");
-chip(40,  [3, 3, .9],        "STBC03",        { lz: 5, ez: 12 });
-chip(54,  [6, 5, .8],        "W25Q128JV", { ez: -12 });
-chip(-26, [2, 2, .74],       "LIS2DUX12",     { lz: -5, ez: -14 });
-chip(-42, [11.5, 13.5, 2],   "BLUENRG-M2SA",  { color: 0x222222, ez: 14, ex: 30 });
-chip(-66, SPEC.battery,      "KP-401522 · 180 mAh", { dir: -1, color: 0x3b3b3b, ez: -10, ex: 22 });
-const opt = chip(C / 2, [9, 7, 1.4], "MAX86141", { dir: -1, color: 0x101010, ly: 8, ex: 22 });
+chip(-6,  [7, 7, .7],        "STM32U3C5CI",   { ex: 20, et: 16, ez: 12 });
+chip(15,  [3, 3, .9],        "STBC03",        { ex: 32, et: 12, ez: 16, ly: 17, lz: -7 });
+chip(6,   [6, 5, .8],        "W25Q128JV",     { ex: 20, et: -12, ez: 16, ly: 13, lz: 7 });
+chip(-14, [2, 2, .74],       "LIS2DUX12",     { ex: 32, et: -16, ez: -16, ly: 21, lz: -12 });
+chip(-28, [11.5, 13.5, 2],   "BLUENRG-M2SA",  { color: 0x222222, ex: 26, et: 12, ez: 12 });
+chip(19,  SPEC.battery,      "KP-401522 · 180 mAh", { dir: -1, color: 0x3b3b3b, ex: 20, et: 16, ez: -4 });
+const opt = chip(0, [9, 7, 1.4], "MAX86141", { dir: -1, color: 0x101010, ly: 8, ex: 16, et: -16, ez: 8 });
 [-2, 2].forEach(z => { const m = new THREE.Mesh(new THREE.SphereGeometry(.7, 16, 16), new THREE.MeshBasicMaterial({ color: 0x27ff7a })); m.position.set(0, -.75, z); opt.add(m); });
 
 /* ---- UI ---- */
@@ -438,6 +305,31 @@ let explodeTarget = 0, explode = 0;
 toggle("bExplode", on => { explodeTarget = on ? 1 : 0; document.getElementById("bExplode").textContent = on ? "Assemble" : "Disassemble"; });
 toggle("bLabels", on => labels.forEach(l => l.el.style.display = on ? "" : "none"));
 toggle("bSpin", on => controls.autoRotate = on);
+
+const COLORWAYS = [   // inner = skin-side layer color; the outer layer is always clear.
+  { name: "Black / White",  inner: [0x000000, .5],  hw: "#e8e8e8", c: ["#000", "#fff"],    pcb: ["#e8e8e8", "#000"] },
+  { name: "Red / Black",    inner: [0x7a0e16, .5],  hw: "#000", c: ["#7a0e16", "#000"], pcb: ["#000", "#ff7a82"] },
+  { name: "Yellow / Black", inner: [0xa88700, .45], hw: "#000", c: ["#a88700", "#000"], pcb: ["#000", "#e0bb1a"] },
+  { name: "Olive / Black",  inner: [0x37421a, .5],  hw: "#000", c: ["#37421a", "#000"], pcb: ["#000", "#b4c46a"] }
+];
+const OUTER_OPACITY = .04;
+const cwBox = document.getElementById("cw"), cwName = document.getElementById("cwName");
+function setColorway(i) {
+  const cw = COLORWAYS[i];
+  outerMat.color.set(0xffffff); outerMat.opacity = OUTER_OPACITY;
+  innerMat.color.set(cw.inner[0]); innerMat.opacity = cw.inner[1];
+  strapMat.color.set(cw.inner[0]); hwMat.color.set(cw.hw);
+  pcbMat.map.dispose(); pcbMat.map = pcbTex(...cw.pcb); pcbMat.needsUpdate = true;
+  cwName.textContent = "Colorway: " + cw.name;
+  [...cwBox.children].forEach((b, j) => b.setAttribute("aria-pressed", j === i));
+}
+COLORWAYS.forEach((cw, i) => {
+  const b = document.createElement("button"); b.className = "sw" + (cw.clear ? " clear" : "");
+  b.style.setProperty("--c1", cw.c[0]); if (cw.c[1]) b.style.setProperty("--c2", cw.c[1]);
+  b.setAttribute("aria-label", cw.name); b.title = cw.name;
+  b.addEventListener("click", () => setColorway(i)); cwBox.appendChild(b);
+});
+setColorway(0);
 
 function themeEdge() { edgeMat.color.set(getComputedStyle(document.documentElement).getPropertyValue("--edge").trim() || "#fff"); }
 themeEdge();
@@ -463,7 +355,7 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   explode += Math.sign(gap) * Math.min(Math.abs(gap), reduceMotion ? 1 : dt / 1.1);
   const e = explode * explode * (3 - 2 * explode);        // smoothstep ease
   parts.forEach(p => p.obj.position.copy(p.base).addScaledVector(p.vec, e));
-  const k = 1 + .45 * e; camera.position.multiplyScalar(k / camK); camK = k;   // pull back as parts spread
+  const k = 1 + .6 * e; camera.position.multiplyScalar(k / camK); camK = k;   // pull back as parts spread
   controls.update(); renderer.render(scene, camera);
   const w = stage.clientWidth, h = stage.clientHeight;
   labels.forEach(({ el, g, p }) => {

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Components · Flex band</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Nabla&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0c; --fg: #f4f4f4; --muted: #9a9a9a; --line: rgba(255,255,255,.55); --rule: rgba(255,255,255,.14); --accent: #ffe135; --head: #fff; --pal: --nd;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --rule:rgba(255,255,255,.14); } }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --head:#000; --pal:--nl; --accent:#e6b800; --bg:#ececea; --fg:#111; --muted:#666; --line:rgba(0,0,0,.5); --rule:rgba(0,0,0,.14); } }
+  :root[data-theme="dark"] { --head:#fff; --pal:--nd; --bg:#0b0b0c; --fg:#f4f4f4; --muted:#9a9a9a; --line:rgba(255,255,255,.55); --rule:rgba(255,255,255,.14); }
+  @font-palette-values --nd { font-family: "Nabla"; override-colors: 0 #fff, 1 #fff, 2 #fff, 3 #fff, 4 #fff, 5 #fff, 6 #fff, 7 #fff, 8 #fff, 9 #fff, 10 #fff, 11 #fff, 12 #fff, 13 #fff, 14 #fff, 15 #fff; }
+  @font-palette-values --nl { font-family: "Nabla"; override-colors: 0 #000, 1 #000, 2 #000, 3 #000, 4 #000, 5 #000, 6 #000, 7 #000, 8 #000, 9 #000, 10 #000, 11 #000, 12 #000, 13 #000, 14 #000, 15 #000; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 16px 20px 72px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  h1 { margin: 24px 0 0; color: var(--head); font: 400 44px/1.1 "Nabla", ui-monospace, monospace; font-palette: var(--pal); }
+  h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px var(--line); margin-left: 8px; }
+  .lede { margin: 12px 0 24px; color: var(--muted); max-width: 60ch; font: 11px/1.9 "Michroma", ui-monospace, monospace; }
+  button, a.pill { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+  button[aria-pressed="true"], a.pill:hover { background: var(--fg); color: var(--bg); }
+  button:focus-visible, a.pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; min-width: 700px; border-collapse: collapse; text-align: left; }
+  th, td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { color: var(--muted); font-weight: 400; }
+  td.part { color: var(--fg); white-space: nowrap; font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
+  td { color: var(--muted); font: 11px/1.8 "Michroma", ui-monospace, monospace; }
+  tr[hidden] { display: none; }
+  .note { margin-top: 20px; color: var(--muted); font: 10px/1.8 "Michroma", ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="pill" href="index.html">Back to model</a>
+    <a class="pill" href="about.html">About</a>
+  </div>
+
+  <h1>Components<i></i></h1>
+  <p class="lede">Everything inside the band, from the clear shell to each chip on the flexible PCB.</p>
+
+  <div class="filters" role="group" aria-label="Filter components">
+    <button aria-pressed="true" data-f="all">All</button>
+    <button aria-pressed="false" data-f="top">Top of PCB</button>
+    <button aria-pressed="false" data-f="under">Skin side</button>
+    <button aria-pressed="false" data-f="structure">Structure</button>
+  </div>
+
+  <div class="scroll">
+  <table>
+    <thead>
+      <tr><th scope="col">Part</th><th scope="col">What it does</th><th scope="col">Location</th><th scope="col">Size (mm)</th></tr>
+    </thead>
+    <tbody id="rows">
+      <tr data-g="top"><td class="part">STM32U3C5CI</td><td>Main microcontroller. Runs the firmware and drives the display.</td><td>Top of PCB</td><td>7 &times; 7 &times; 0.7 (est.)</td></tr>
+      <tr data-g="top"><td class="part">STBC03</td><td>Battery charger. Manages charging of the Li-ion cell.</td><td>Top of PCB</td><td>3 &times; 3 &times; 0.9 (est.)</td></tr>
+      <tr data-g="top"><td class="part">W25Q128JV</td><td>128 Mbit flash memory for stored data and assets.</td><td>Top of PCB</td><td>6 &times; 5 &times; 0.8 (est.)</td></tr>
+      <tr data-g="top"><td class="part">LIS2DUX12</td><td>Low-power accelerometer. Senses motion and steps.</td><td>Top of PCB</td><td>2 &times; 2 &times; 0.74</td></tr>
+      <tr data-g="top"><td class="part">BLUENRG-M2SA</td><td>Bluetooth Low Energy module. Connects the band to a phone.</td><td>Top of PCB</td><td>11.5 &times; 13.5 &times; 2 (est.)</td></tr>
+      <tr data-g="under"><td class="part">KP-401522</td><td>180 mAh battery.</td><td>Skin side</td><td>22 &times; 15 &times; 4</td></tr>
+      <tr data-g="under"><td class="part">MAX86141</td><td>Optical sensor for heart rate. The two green dots are its LEDs.</td><td>Skin side</td><td>9 &times; 7 &times; 1.4 (est.)</td></tr>
+      <tr data-g="structure"><td class="part">Flexible OLED</td><td>1.5&Prime; dot-matrix style display, 120 &times; 240 px.</td><td>Outer surface, top</td><td>34.1 arc &times; 17.0 wide</td></tr>
+      <tr data-g="structure"><td class="part">Flex PCB</td><td>Polyimide board that carries the chips. Runs the full loop, mid-stack.</td><td>Whole loop</td><td>20 wide &times; 0.2 thick</td></tr>
+      <tr data-g="structure"><td class="part">Clear shell</td><td>TPU/silicone encapsulation that protects the electronics.</td><td>Whole loop</td><td>7.5 thick &times; 24 wide</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="note">All parts are being used in a prototype. Parts are subject to change.</p>
+</div>
+
+<script>
+const btns = document.querySelectorAll(".filters button");
+const rows = document.querySelectorAll("#rows tr");
+btns.forEach(b => b.addEventListener("click", () => {
+  btns.forEach(x => x.setAttribute("aria-pressed", x === b));
+  rows.forEach(r => r.hidden = b.dataset.f !== "all" && r.dataset.g !== b.dataset.f);
+}));
+</script>
+</body>
+</html>

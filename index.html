@@ -30,6 +30,21 @@
   header { position: absolute; left: 20px; top: 16px; pointer-events: none; }
   h1 { margin: 0; color: var(--head); font: 400 44px/1 "Nabla", ui-monospace, monospace; font-palette: var(--pal); }
   h1 i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px var(--line); margin-left: 8px; }
+
+
+  h1, #overview h2 {
+    color: var(--head);
+    font: 400 44px/1.1 "Michroma", ui-monospace, monospace; /* Safari fallback */
+  }
+
+  @supports font-tech(color-COLRv1) {
+    h1, #overview h2 {
+      font-family: "Nabla", ui-monospace, monospace;
+      font-palette: var(--pal);
+    }
+  }
+
+
   header p { margin: 10px 0 0; color: var(--head); max-width: 36ch; font: 10px/1.8 "Michroma", ui-monospace, monospace; }
   .bar { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; gap: 8px; justify-content: center; }
   button, a.pill { font: inherit; color: var(--fg); background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 7px 16px; cursor: pointer; text-decoration: none; display: inline-block; }
